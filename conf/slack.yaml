@@ -1,0 +1,16 @@
+AdminUsers: [ "parsley" ]
+ProtocolConfig:
+  MaxMessageSplit: {{ env "GOPHER_SLACK_MAX_MSGS" | default "2" }}
+  SlackToken: xoxb-{{ decrypt "jtiLz7+OhYaLEcp24PwOMK/pYmTIwFYPeUDogBps/mk3gbtgxv/R40Io/c5cUMzI89BADPISXOKXVWHc58psYdN98Yp4TDkW1OWwkNtm" }}
+
+DefaultChannels: [ "general", "random" ]
+
+UserRoster:
+  - UserName: parsley
+    UserID: U0JLW8EMS
+  # - UserName: floyd
+  #   UserID: U138KTVCL
+  #   BotUser: true
+        
+{{ $defaultjobchannel := "data-jobs" }}
+DefaultJobChannel: {{ env "GOPHER_JOBCHANNEL" | default $defaultjobchannel }}
