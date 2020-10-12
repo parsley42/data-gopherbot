@@ -108,16 +108,10 @@ ScheduledJobs:
 ## After adding an initial administrator, you should disable the setup
 ## plugin by uncommenting the next three lines.
 ExternalPlugins:
-{{ if env "GOPHER_SETUP_TOKEN" }}
-  "addadmin":
-    Description: Setup plugin allowing an initial administrator to be added
-    Path: plugins/addadmin.sh
-    Privileged: true
-    Homed: true
-    Parameters:
-    - Name: GOPHER_SETUP_TOKEN
-      Value: {{ env "GOPHER_SETUP_TOKEN" }}
-{{ end }}
+  "accord":
+    Description: Plugin for developing the ACCORD Kubernetes API
+    Path: accord/accord.py
+    NameSpace: kube-env
 #   "weather":
 #     Description: A plugin that uses OpenWeatherMap to report the weather
 #     Path: plugins/weather.rb
@@ -148,6 +142,13 @@ ExternalPlugins:
 #     Path: goplugins/meme.so
 
 NameSpaces:
+  "kube-env":
+    Parameters:
+    # Pass-through env required for kubectl & library
+    - Name: "KUBERNETES_SERVICE_HOST"
+      Value: "{{ env "KUBERNETES_SERVICE_HOST" }}"
+    - Name: "KUBERNETES_SERVICE_PORT"
+      Value: "{{ env "KUBERNETES_SERVICE_PORT" }}"
   "ssh":
     Parameters:
     - Name: "KEYNAME"
