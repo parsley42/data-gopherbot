@@ -3,7 +3,7 @@ ProtocolConfig:
   MaxMessageSplit: {{ env "GOPHER_SLACK_MAX_MSGS" | default "2" }}
   SlackToken: xoxb-{{ decrypt "jtiLz7+OhYaLEcp24PwOMK/pYmTIwFYPeUDogBps/mk3gbtgxv/R40Io/c5cUMzI89BADPISXOKXVWHc58psYdN98Yp4TDkW1OWwkNtm" }}
 
-DefaultChannels: [ "general", "random" ]
+DefaultChannels: [ "general", "random", "data-jobs" ]
 
 UserRoster:
   - UserName: parsley
