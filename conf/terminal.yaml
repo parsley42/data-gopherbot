@@ -1,9 +1,26 @@
 ## The terminal connector can mirror the actual team/users/channels for
 ## devel.
-# DefaultChannels: [ "general", "staff", "helpdesk" ]
+AdminUsers: [ "parsley" ]
+DefaultChannels: [ "general", "data-jobs" ]
 ProtocolConfig:
+  StartChannel: "data-jobs"
+  StartUser: "parsley"
   EOF: '*quit'
   Abort: '*abort'
+  Users:
+  - Name: parsley
+    Email: "parsley@linuxjedi.org"
+    InternalID: "u0001"
+    FullName: "David Parsley"
+    FirstName: "David"
+    LastName: "Parsley"
+  Channels:
+  - general
+  - data-jobs
+
+UserRoster:
+- UserName: "parsley"
+  UserID: "u0001"
 #   Users:
 #   - tommy
 #   - jane

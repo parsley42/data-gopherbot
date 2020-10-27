@@ -149,6 +149,14 @@ NameSpaces:
       Value: "{{ env "KUBERNETES_SERVICE_HOST" }}"
     - Name: "KUBERNETES_SERVICE_PORT"
       Value: "{{ env "KUBERNETES_SERVICE_PORT" }}"
+  "aws-dns":
+    Parameters:
+    - Name: "AWS_ACCESS_KEY_ID"
+      Value: "{{ decrypt "xmZ/9hBU6J+0PBc+2N9fVH+C3dwVDjQQkRsa6QKAd+HQK+0oWvoHq4jCMN3qAAIB" }}"
+    - Name: "AWS_SECRET_ACCESS_KEY"
+      Value: "{{ decrypt "gYarDz0dS1kGc5uncShiEow7EpEaYhRsTC+s9pkpZFWpzc2X6JYeyIoS/qljrWfgSd1VICPCd+SCQ3s2MHCoAkw55S8=" }}"
+    - Name: "AWS_REGION"
+      Value: "us-east-1"
   "ssh":
     Parameters:
     - Name: "KEYNAME"

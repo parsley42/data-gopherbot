@@ -1,0 +1,17 @@
+*** save - Starting task 'save': A job for saving up the robot's configuration
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorFail/typeTask: tail-log
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: git-init git@github.com:parsley42/data-gopherbot.git
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: exec git add --all
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: exec git commit -m Save robot configuration
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: exec git push
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: say Save finished
+*** git-init git@github.com:parsley42/data-gopherbot.git - Starting task 'git-init': Check for and initialize ssh for a repository if needed, check for GOPHER_CONFIGDIR/git/config and set XDG_CONFIG_HOME
+
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: ssh-init
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: ssh-scan github.com
+*** ssh-init - Starting task 'ssh-init': Pipeline job for setting up ssh-agent for the 'bot
+2020/10/27 12:49:52 OUT Agent pid 2368
+2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorFinal/typeTask: exec ssh-agent -k
+2020/10/27 12:49:52 ERR Identity added: /home/robot/custom/ssh/manage_key (parsley@linuxjedi.org)
+*** ssh-scan github.com - Starting task 'ssh-scan': Helper script for adding ssh host keys to known_hosts
+*** exec git add --all - Starting task 'exec': Simple utility for running scripts in a repository
