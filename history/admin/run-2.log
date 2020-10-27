@@ -1,5 +1,0 @@
-*** admin save - Starting task 'admin': A plugin that triggers management jobs like update, save, backup, etc.
-2020/10/27 12:49:51 LOG Debug Adding pipeline task flavorFail/typeTask: tail-log
-2020/10/27 12:49:51 LOG Debug Adding pipeline task flavorAdd/typeJob: save
-2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorFail/typeTask: say Job failed!
-2020/10/27 12:49:52 LOG Debug Adding pipeline task flavorAdd/typeTask: say ... done
