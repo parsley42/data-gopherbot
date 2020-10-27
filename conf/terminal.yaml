@@ -2,6 +2,7 @@
 ## devel.
 AdminUsers: [ "parsley" ]
 DefaultChannels: [ "general", "data-jobs" ]
+DefaultJobChannel: "data-jobs"
 ProtocolConfig:
   StartChannel: "data-jobs"
   StartUser: "parsley"

@@ -75,6 +75,10 @@ HistoryConfig:
 # DefaultMessageFormat: Variable # 'Raw' if not specified
 
 ExternalJobs:
+  "ipcheckup":
+    Description: Job to check and if needed update DNS
+    Path: jobs/ipcheckup.sh
+    NameSpace: aws-dns
 #   "hello":
 #     Description: Trivial hello world job for testing
 #     Path: jobs/hello.sh
@@ -95,6 +99,8 @@ ScheduledJobs:
   Schedule: "0 0 8 * * *"
 - Name: backup
   Schedule: "@every 1m"
+- Name: ipcheckup
+  Schedule: "@every 5m"
 ## If your robot is logging to a file, this job will rotate logs
 # - Name: logrotate
 #   Schedule: "5 0 0 * * *"
