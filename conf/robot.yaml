@@ -114,9 +114,9 @@ ScheduledJobs:
 ## After adding an initial administrator, you should disable the setup
 ## plugin by uncommenting the next three lines.
 ExternalPlugins:
-  "accord":
-    Description: Plugin for developing the ACCORD Kubernetes API
-    Path: accord/accord.py
+  "userpods":
+    Description: Plugin for starting user pods w/ the Kubernetes API
+    Path: userpod/userpod.py
     NameSpace: kube-env
 #   "weather":
 #     Description: A plugin that uses OpenWeatherMap to report the weather
