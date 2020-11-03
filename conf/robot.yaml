@@ -118,6 +118,15 @@ ExternalPlugins:
     Description: Plugin for starting user pods w/ the Kubernetes API
     Path: userpod/userpod.py
     NameSpace: kube-env
+    Parameters:
+    - Name: USERPOD_DOM
+      Value: "portal.linuxjedi.org"
+    - Name: USERPOD_REGISTRY
+      Value: "registry.in.linuxjedi.org"
+    - Name: USERPOD_REGISTRY_ORG
+      Value: "accord"
+    - Name: USERPOD_NAMESPACE
+      Value: "accord"
 #   "weather":
 #     Description: A plugin that uses OpenWeatherMap to report the weather
 #     Path: plugins/weather.rb

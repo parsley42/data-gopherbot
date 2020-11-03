@@ -1,9 +1,31 @@
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 import podlib.passgrp as passgrp
+import os
 
-pod_dom = "dev.uvarc.io"
-registry = "474683445819.dkr.ecr.us-east-1.amazonaws.com"
+pod_dom = os.getenv("USERPOD_DOM")
+registry = os.getenv("USERPOD_REGISTRY")
+registry_org = os.getenv("USERPOD_REGISTRY_ORG")
+namespace = os.getenv("USERPOD_NAMESPACE")
+
+def podtypes():
+    """ Generates a string array of user pod types
+
+    Returns
+    -------
+    types: str[]
+        An array of pod types.
+    """
+
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+
+    type_maps = v1.list_namespaced_config_map(namespace, label_selector="class=userpod")
+    types = []
+    ntypes = len(type_maps.items)
+    for i in range(ntypes):
+        types.append(type_maps.items[i].metadata.name)
+    return types
 
 def podstatus(pod_name):
     """ Checks the status of a user pod

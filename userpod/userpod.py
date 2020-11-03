@@ -18,25 +18,22 @@ if command == "configure":
 if command == "init":
     exit(0)
 
+if command == "types":
+    pod_types = pods.podtypes()
+    say = [ "Pod types:" ]
+    bot.Say("\n".join(say + pod_types))
+
 if command == "launch":
-    dom = "dev.uvarc.io"
-    host = pods.userpod("theia-python", "dlp7y@virginia.edu", 2000, "askljsdfoobar", 2000)
-    isbot = os.getenv("GOPHER_INSTALLDIR") != None
+    dom = os.getenv("USERPOD_DOM")
+    ptype = sys.argv.pop(0)
+    host = pods.userpod(ptype, "parse", 1000, "project", 1000)
     while True:
         status = pods.podstatus(host)
         if status == "Pending":
-            if not isbot:
-                print("Pending")
             time.sleep(2)
         else:
             if status == "Ready":
-                if isbot:
-                    bot.Say("Launched: https://%s.%s" % (host, dom))
-                else:
-                    print("Launched: https://%s.%s" % (host, dom))
+                bot.Say("Launched: https://%s.%s" % (host, dom))
             else:
-                if isbot:
-                    bot.Say("Failed: %s" % status)
-                else:
-                    print("Failed: %s" % status)
+                bot.Say("Failed: %s" % status)
             break

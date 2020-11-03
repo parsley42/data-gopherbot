@@ -1,0 +1,10 @@
+Help:
+- Keywords: [ "pod", "launch" ]
+  Helptext: [ "(bot), launch pod <type> - start a user pod" ]
+- Keywords: [ "pod", "list", "types" ]
+  Helptext: [ "(bot), list pod types - list the available types of user pod" ]
+CommandMatchers:
+- Command: "launch"
+  Regex: '(?i:launch pod ([.\w-]+))'
+- Command: "types"
+  Regex: '(?i:list pod types)'
