@@ -79,6 +79,9 @@ ExternalJobs:
     Description: Job to check and if needed update DNS
     Path: jobs/ipcheckup.sh
     NameSpace: aws-dns
+  "theia":
+    Description: Start theia interface
+    Path: jobs/theia.sh
 #   "hello":
 #     Description: Trivial hello world job for testing
 #     Path: jobs/hello.sh
@@ -119,39 +122,16 @@ ExternalPlugins:
     Path: userpod/userpod.py
     NameSpace: kube-env
     Parameters:
-    - Name: USERPOD_DOM
-      Value: "portal.linuxjedi.org"
-    - Name: USERPOD_REGISTRY
-      Value: "registry.in.linuxjedi.org"
-    - Name: USERPOD_REGISTRY_ORG
-      Value: "accord"
     - Name: USERPOD_NAMESPACE
       Value: "accord"
-#   "weather":
-#     Description: A plugin that uses OpenWeatherMap to report the weather
-#     Path: plugins/weather.rb
-#     Parameters:
-#     - Name: OWM_APIKEY
-#       Value: replace with encrypted string
-#     - Name: TEMP_UNITS
-#       Value: {{ env "GOPHER_OWM_UNITS" | default "imperial" }} # or 'metric'
-#     - Name: DEFAULT_COUNTRY
-#       Value: {{ env "GOPHER_OWM_COUNTRY" | default "us" }} # or other ISO 3166 country code
-#   "chuck":
-#     Description: A plugin that pipes up whenever The Man's name is mentioned
-#     Path: plugins/chuck.rb
-#   "echo":
-#     Description: Trivial bash plugin
-#     Path: plugins/echo.sh
-#   "pythondemo":
-#     Description: Sample python plugin
-#     Path: plugins/samples/pythondemo.py
+    - Name: USERPOD_CONFIG
+      Value: "userpod"
 
 ## Note that modules for connectors, brains and history providers load automatically
-# LoadableModules:
-#   "knock":
-#     Description: Knock knock jokes!
-#     Path: goplugins/knock.so
+LoadableModules:
+  "knock":
+    Description: Knock knock jokes!
+    Path: goplugins/knock.so
 #   "memes":
 #     Description: Memes!
 #     Path: goplugins/meme.so
