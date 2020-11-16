@@ -6,7 +6,27 @@ import os
 pod_dom = os.getenv("USERPOD_DOM")
 registry = os.getenv("USERPOD_REGISTRY")
 registry_org = os.getenv("USERPOD_REGISTRY_ORG")
-namespace = os.getenv("USERPOD_NAMESPACE")
+
+def get_config():
+    """ Consults the environment for namespace and configmap name
+    to load for configuration.
+
+    Returns
+    -------
+    config: dict{}
+        A dictionary of key: values with userpod configuration
+    """
+
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+
+    namespace = os.getenv("USERPOD_NAMESPACE")
+    cfgmap = os.getenv("USERPOD_CONFIG")
+
+    cmap = v1.read_namespaced_config_map(cfgmap, namespace)
+    data = cmap.data
+    data["NAMESPACE"] = namespace
+    return data
 
 def podtypes():
     """ Generates a string array of user pod types
@@ -17,8 +37,10 @@ def podtypes():
         An array of pod types.
     """
 
-    config.load_incluster_config()
+    cfg = get_config()
+    # config.load_incluster_config()
     v1 = client.CoreV1Api()
+    namespace = cfg["NAMESPACE"]
 
     type_maps = v1.list_namespaced_config_map(namespace, label_selector="class=userpod")
     types = []
@@ -65,7 +87,7 @@ def podstatus(pod_name):
     elif status == "Unknown":
         return "Error: Pod status could not be determined"
 
-def userpod(pod_type, eppn, uid, groupname, gid):
+def userpod(pod_type, username, uid, groupname, gid):
     """Starts a user pod
 
     Parameters
