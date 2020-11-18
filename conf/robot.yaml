@@ -1,4 +1,4 @@
-# AdminContact: "Joe Admin, <joe@my.org>"
+AdminContact: "David Parsley, <parsley@linuxjedi.org>"
 
 ## Configure the robot connection protocol; modifying this could
 ## break `gopherbot -t`
@@ -15,7 +15,7 @@ Protocol: {{ $proto }}
 {{ end }}
 
 {{ $botname := env "GOPHER_BOTNAME" | default "data" }}
-{{ $botemail := env "GOPHER_BOTMAIL" | default "parsley@linuxjedi.org" }}
+{{ $botemail := env "GOPHER_BOTMAIL" | default "data@linuxjedi.org" }}
 {{ $botfullname := env "GOPHER_BOTFULLNAME" | default "Data Gopherbot" }}
 {{ $botalias := env "GOPHER_ALIAS" | default "*" }}
 
@@ -82,6 +82,9 @@ ExternalJobs:
   "theia":
     Description: Start theia interface
     Path: jobs/theia.sh
+  "alive":
+    Description: Job for weekly 'I'm alive' email
+    Path: jobs/alive.sh
 #   "hello":
 #     Description: Trivial hello world job for testing
 #     Path: jobs/hello.sh
@@ -104,6 +107,8 @@ ScheduledJobs:
   Schedule: "@every 1m"
 - Name: ipcheckup
   Schedule: "@every 5m"
+- Name: alive
+  Schedule: "0 9 * * MON"
 ## If your robot is logging to a file, this job will rotate logs
 # - Name: logrotate
 #   Schedule: "5 0 0 * * *"
@@ -177,11 +182,11 @@ DefaultMessageFormat: Raw
 ## secure apps for the sending account. See:
 ## https://support.google.com/accounts/answer/6010255
 
-# MailConfig:
-#   Mailhost: smtp.gmail.com:587
-#   Authtype: plain
-#   User: clu@linuxjedi.org
-#   Password: replace with encrypted string
+MailConfig:
+  Mailhost: smtp.gmail.com:587
+  Authtype: plain
+  User: data@linuxjedi.org
+  Password: {{ decrypt "/BdhlA9fTNkuiNdkfwiEQRTv0ceGNOVWqoDbqPUpe++qGrS3VJxJhbMn" }}
 
 ## Use Google Authenticator TOTP by default for elevated commands. To use:
 ## - Ask the robot to 'send launch codes', and it will send you (one time)
