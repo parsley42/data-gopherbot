@@ -131,6 +131,8 @@ ExternalPlugins:
       Value: "accord"
     - Name: PODLIB_CONFIG
       Value: "userpod"
+    - Name: PODLIB_INCLUSTER
+      Value: "true"
 
 ## Note that modules for connectors, brains and history providers load automatically
 LoadableModules:
