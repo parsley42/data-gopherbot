@@ -12,7 +12,11 @@ def get_config():
         A dictionary of key: values with userpod configuration
     """
 
-    config.load_incluster_config()
+    incluster = os.getenv("PODLIB_INCLUSTER")
+    if incluster and incluster == "true":
+        config.load_incluster_config()
+    else:
+        config.load_kube_config()
     v1 = client.CoreV1Api()
 
     namespace = os.getenv("PODLIB_NAMESPACE")
