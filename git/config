@@ -5,3 +5,5 @@
 	email = parsley@linuxjedi.org
 [push]
 	default = simple
+[pull]
+    rebase = true

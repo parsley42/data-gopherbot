@@ -124,12 +124,12 @@ ScheduledJobs:
 ExternalPlugins:
   "userpods":
     Description: Plugin for starting user pods w/ the Kubernetes API
-    Path: userpod/userpod.py
+    Path: plugins/userpod.py
     NameSpace: kube-env
     Parameters:
-    - Name: USERPOD_NAMESPACE
+    - Name: PODLIB_NAMESPACE
       Value: "accord"
-    - Name: USERPOD_CONFIG
+    - Name: PODLIB_CONFIG
       Value: "userpod"
 
 ## Note that modules for connectors, brains and history providers load automatically

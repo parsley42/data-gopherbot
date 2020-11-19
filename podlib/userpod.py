@@ -1,35 +1,15 @@
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
-import podlib.passgrp as passgrp
 import os
+from podlib.config import get_config
 
-pod_dom = os.getenv("USERPOD_DOM")
-registry = os.getenv("USERPOD_REGISTRY")
-registry_org = os.getenv("USERPOD_REGISTRY_ORG")
-
-def get_config():
-    """ Consults the environment for namespace and configmap name
-    to load for configuration.
-
-    Returns
-    -------
-    config: dict{}
-        A dictionary of key: values with userpod configuration
-    """
-
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
-
-    namespace = os.getenv("USERPOD_NAMESPACE")
-    cfgmap = os.getenv("USERPOD_CONFIG")
-
-    cmap = v1.read_namespaced_config_map(cfgmap, namespace)
-    data = cmap.data
-    data["NAMESPACE"] = namespace
-    return data
-
-def podtypes():
+def pod_types(project=""):
     """ Generates a string array of user pod types
+
+    Parameters
+    ----------
+    project: str
+        The name of the project, for project-specific types.
 
     Returns
     -------
