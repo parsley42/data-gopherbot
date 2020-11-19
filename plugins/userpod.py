@@ -2,20 +2,20 @@
 
 import os
 import sys
+import time
+sys.path.append("%s/lib" % os.getenv("GOPHER_INSTALLDIR"))
+from gopherbot_v2 import Robot
+cfgdir = os.getenv("GOPHER_CONFIGDIR")
+sys.path.append(cfgdir)
+import podlib.userpod as userpod
+
+bot = Robot()
 
 executable = sys.argv.pop(0)
 command = sys.argv.pop(0)
 
 if command == "configure":
     exit(0)
-
-import time
-sys.path.append("%s/lib" % os.getenv("GOPHER_INSTALLDIR"))
-from gopherbot_v2 import Robot
-sys.path.append(os.getenv("GOPHER_CONFIGDIR"))
-import podlib.userpod as userpod
-
-bot = Robot()
 
 if command == "init":
     exit(0)
