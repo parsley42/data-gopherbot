@@ -4,8 +4,6 @@
 
 source $GOPHER_INSTALLDIR/lib/gopherbot_v1.sh
 
-Say "My path is: $PATH"
-
 SHELL=/bin/bash
 THEIA_DEFAULT_PLUGINS=local-dir:/usr/local/theia/plugins
 USE_LOCAL_GIT=true
