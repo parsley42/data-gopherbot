@@ -1,4 +1,4 @@
-FROM quay.io/lnxjedi/gopherbot-theia:latest
+FROM registry.in.linuxjedi.org/lnxjedi/gopherbot-theia:latest
 
 USER root
 
@@ -8,13 +8,15 @@ ARG homedir=/home/robot
 ARG mdbookvers=v0.4.4
 ARG kubectlvers=v1.18.12
 
-RUN dnf -y reinstall shadow-utils && \
+RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
+  dnf -y reinstall shadow-utils && \
   dnf -y install 'dnf-command(copr)' && \
   dnf -y copr enable rhcontainerbot/container-selinux && \
   curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo && \
   dnf -y install \
     buildah \
-    fuse-overlayfs && \
+    fuse-overlayfs \
+    gh && \
   dnf clean all && \
   rm -rf /var/cache /var/log/dnf* /var/log/dnf.*
 
