@@ -82,6 +82,15 @@ ExternalJobs:
   "theia":
     Description: Start theia interface
     Path: jobs/theia.sh
+  "quaytrigger":
+    Description: Trigger an automated container build on quay.io
+    Path: jobs/quaytrigger.sh
+    NameSpace: github-token
+    Parameters:
+    - Name: "gopherbot_base"
+      Value: "{{ decrypt "8XXXDo48wxhNQI5u3G2xQy/KV2omF1PYbfLEHGvnxjsJY9hBVSTZZw/ibFXy+mE2y5pHwI1SrYB2SkSh+JIVVuJtKrmWSPzra6gEj+TwGShhfVfEksCaYXS/dSLlJC4KROHv6z0YJvBRbdAbblPlzT/sbyq4401YRz/i0qnbn8wXLGIFfiNh3gNK3NZxpfkUgkcFFc5NpKQUUCIToh4xv6/iqiGu0JEIR+aHuMrf" }}"
+    - Name: "gopherbot_base_theia"
+      Value: "{{ decrypt "Z2GWqmaqjTn7avaU6ueCapptniXQBcVwR9CWj70G8xnezQw3tIcXDBevsER7KzBsHDPxMsicyFF8C/smshaa+bEhMxSV4mgNFtjMa/s3mbcPhesQwOZavyz3YW4RlS9iD+jzviLBv/YCK9YTuHmxARqjFPzitaXnXt6ezosLUCfAlwpti0+sUhSQ3E9VWf3NJQHmBNC1slutYPcMSO+dIlwxcgmxOq7gUblkfeJz" }}"
   "alive":
     Description: Job for weekly 'I'm alive' email
     Path: jobs/alive.sh
@@ -108,7 +117,17 @@ ScheduledJobs:
 - Name: ipcheckup
   Schedule: "@every 5m"
 - Name: alive
-  Schedule: "0 9 * * MON"
+  Schedule: "0 0 9 * * MON"
+## Build gopherbot-base container just after 12am Saturday
+- Name: quaytrigger
+  Schedule: "1 0 0 * * SAT"
+  Arguments:
+  - "gopherbot-base"
+## Build gopherbot-base-theia container just after 6am Saturday
+- Name: quaytrigger
+  Schedule: "1 0 6 * * SAT"
+  Arguments:
+  - "gopherbot-base-theia"
 ## If your robot is logging to a file, this job will rotate logs
 # - Name: logrotate
 #   Schedule: "5 0 0 * * *"
@@ -151,6 +170,10 @@ NameSpaces:
       Value: "{{ env "KUBERNETES_SERVICE_HOST" }}"
     - Name: "KUBERNETES_SERVICE_PORT"
       Value: "{{ env "KUBERNETES_SERVICE_PORT" }}"
+  "github-token":
+    Parameters:
+    - Name: "GITHUB_TOKEN"
+      Value: "{{ decrypt "hcTTTOrEvo5F0i/iTHki9F2A6rhtHJ7HoFNYqWesfk++oIj1ywC+w4Xtu1BGCQlD4a0VLoeUusKa5RRzmctp4s1NgvA=" }}"
   "aws-dns":
     Parameters:
     - Name: "AWS_ACCESS_KEY_ID"
