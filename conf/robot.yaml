@@ -102,6 +102,16 @@ ExternalJobs:
 #     - Name: NONCE
 #       Value: "No way, Jack!"
 
+ExternalTasks:
+  "buildah-login":
+    Description: Perform buildah login for container build/push
+    Path: tasks/buildah-login.sh
+    Parameters:
+    - Name: "QUAY"
+      Value: "{{ decrypt "rvXAtEYi8AB/7rkfp2JjqM7A1hfduwlljTYBRi0fiSIkL0l7UIh1nGb3DtjLLKPZmFGc30kg7PHlApbPhN0nrVxXPmLXKM/JJ9nzTYV6LdYkwyTOk4sdYj+eUEg=" }}"
+    - Name: "LINUXJEDI"
+      Value: "{{ decrypt "Fn4jFjnCw4y5pxkS3j53iSezJK/tFqUuXeTPgQVxSR/NM4fdHFCC" }}"
+
 ## Most often you don't want your robot to run scheduled jobs
 ## with the "terminal" connector, normally used for testing and
 ## development.
