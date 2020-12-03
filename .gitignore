@@ -1,3 +1,4 @@
 gopherbot_v2.py
 .env
 robot.log
+__pycache__
