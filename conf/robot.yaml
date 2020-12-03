@@ -130,6 +130,8 @@ ScheduledJobs:
   Schedule: "@every 1m"
 - Name: ipcheckup
   Schedule: "@every 5m"
+- Name: github-poller
+  Schedule: "@every 30s"
 - Name: alive
   Schedule: "0 0 9 * * MON"
 ## Build gopherbot-base container just after 12am Saturday

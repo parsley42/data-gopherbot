@@ -2,6 +2,7 @@
 
 # github-poller.py - Loop through repositories.yaml and check github repos
 # to see if they've changed. If so, start a gopherci build job.
+# GITHUB_TOKEN needs to be provided in `robot.yaml`
 
 import os
 import sys
@@ -28,7 +29,8 @@ if not memory.exists:
 repostats = memory.datum
 print("Memory is: %s" % repostats)
 
-def check_repo(org, name, repoconf):
+def check_repo(reponame, repoconf):
+    _, org, name = reponame.split("/")
     fullname = "%s/%s" % (org, name)
     if not fullname in repostats:
         repostats[fullname] = {}
@@ -49,8 +51,8 @@ def check_repo(org, name, repoconf):
         print("Found %s / %s: last built: %s, current: %s, build: %s" % (fullname, name, last, commit, build))
         if build:
             repotype = repoconf["Type"]
-            bot.Log("Debug", "Adding primary build for github.com/%s (branch %s) to the pipeline, type '%s'" % (fullname, name, repotype))
-            #bot.AddJob(repotype, [ "build", fullname, name ])
+            bot.Log("Debug", "Adding primary build for %s (branch %s) to the pipeline, type '%s'" % (reponame, name, repotype))
+            bot.SpawnJob("gopherci", [ "build", reponame, name ])
 
 for reponame in repodata.keys():
     host, org, name = reponame.split("/")
@@ -58,7 +60,7 @@ for reponame in repodata.keys():
         repoconf = repodata[reponame]
         repotype = repoconf["Type"]
         if len(repotype) != 0 and repotype != "none":
-            check_repo(org, name, repoconf)
+            check_repo(reponame, repoconf)
 
 memory.datum = repostats
 ret = bot.UpdateDatum(memory)
