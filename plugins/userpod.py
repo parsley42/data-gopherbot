@@ -26,16 +26,19 @@ if command == "types":
     bot.Say("\n".join(say + pod_types))
 
 if command == "launch":
-    dom = os.getenv("USERPOD_DOM")
     ptype = sys.argv.pop(0)
-    host = userpod.userpod(ptype, "parse", 1000, "project", 1000)
+    annotations = {
+        "nginx.ingress.kubernetes.io/auth-tls-secret": "admin/linuxjedi-ca-cert",
+        "nginx.ingress.kubernetes.io/auth-tls-verify-client": "on",
+    }
+    host = userpod.userpod(ptype, "parse", 1000, "project", 1000, annotations)
     while True:
         status = userpod.podstatus(host)
         if status == "Pending":
             time.sleep(2)
         else:
             if status == "Ready":
-                bot.Say("Launched: https://%s.%s" % (host, dom))
+                bot.Say("Launched: https://%s" % host)
             else:
                 bot.Say("Failed: %s" % status)
             break
