@@ -1,10 +1,18 @@
 Help:
 - Keywords: [ "pod", "launch" ]
   Helptext: [ "(bot), launch pod <type> - start a user pod" ]
-- Keywords: [ "pod", "list", "types" ]
+- Keywords: [ "pod", "list", "type", "types" ]
   Helptext: [ "(bot), list pod types - list the available types of user pod" ]
+- Keywords: [ "pod", "pods", "list" ]
+  Helptext: [ "(bot), list pods - list the user's pods" ]
+- Keywords: [ "pod", "stop", "terminate" ]
+  Helptext: [ "(bot), terminate <pod> - terminate a running pod" ]
 CommandMatchers:
 - Command: "launch"
   Regex: '(?i:launch pod ([.\w-]+))'
 - Command: "types"
   Regex: '(?i:list pod types)'
+- Command: "list"
+  Regex: '(?i:list pods)'
+- Command: "terminate"
+  Regex: '(?i:terminate ([.\w-]+))'

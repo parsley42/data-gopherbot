@@ -25,6 +25,11 @@ if command == "types":
     say = [ "Pod types:" ]
     bot.Say("\n".join(say + pod_types))
 
+if command == "list":
+    pod_dns = userpod.userpods("parse")
+    say = [ "Running pods:" ]
+    bot.Say("\n".join(say + pod_dns))
+
 if command == "launch":
     ptype = sys.argv.pop(0)
     annotations = {
@@ -42,3 +47,8 @@ if command == "launch":
             else:
                 bot.Say("Failed: %s" % status)
             break
+
+if command == "terminate":
+    pod = sys.argv.pop(0)
+    userpod.terminate(pod)
+    bot.Say("Terminated.")

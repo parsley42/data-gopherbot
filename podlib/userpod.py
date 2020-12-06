@@ -9,12 +9,12 @@ def pod_types(project=""):
     Parameters
     ----------
     project: str
-        The name of the project, for project-specific types.
+        The name of the project, for project-specific types
 
     Returns
     -------
     types: str[]
-        An array of pod types.
+        An array of pod types
     """
 
     cfg = get_config()
@@ -34,7 +34,7 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
 
     Parameters
     ----------
-    pod_type : str
+    pod_type: str
         The workload type of the pod to launch, e.g. "theia-python"
     user: str
         The username for the home directory, "user" or "user@dom"
@@ -55,7 +55,6 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
     """
 
     cfg = get_config()
-    # config.load_incluster_config()
     v1 = client.CoreV1Api()
     v1beta = client.ExtensionsV1beta1Api()
     namespace = cfg["NAMESPACE"]
@@ -291,3 +290,54 @@ def podstatus(pod_dns):
         return "Error: All containers existed, at least one failed"
     elif status == "Unknown":
         return "Error: Pod status could not be determined"
+
+def userpods(username):
+    """Returns a list of pod dns entries for a user
+
+    Parameters
+    ----------
+    username: str
+        The full username, e.g. "<user>" or "<user>@<some.dom>"
+
+    Returns
+    -------
+    pod_dns: []str
+        An array of user pod dns names
+    """
+
+    cfg = get_config()
+    v1 = client.CoreV1Api()
+    namespace = cfg["NAMESPACE"]
+    pod_dom = cfg["POD_DOMAIN"]
+
+    dotted_username = username.replace("@", ".")
+    selector = "dotted-username=%s" % dotted_username
+
+    pod_dns=[]
+    pods = v1.list_namespaced_pod(namespace, label_selector=selector)
+    for pod in pods.items:
+        pod_full = "%s.%s" % (pod.metadata.name, pod_dom)
+        pod_dns.append(pod_full)
+
+    return pod_dns
+
+def terminate(pod_dns):
+    """Terminates a user pod, and removes the service and ingress
+
+    Parameters
+    ----------
+    pod_dns: str
+        The full dns name of the pod to terminate
+    """
+
+    cfg = get_config()
+    v1 = client.CoreV1Api()
+    v1beta = client.ExtensionsV1beta1Api()
+    namespace = cfg["NAMESPACE"]
+
+    name_components = pod_dns.split(".")
+    pod_name = name_components[0]
+
+    v1.delete_namespaced_pod(pod_name, namespace)
+    v1.delete_namespaced_service(pod_name, namespace)
+    v1beta.delete_namespaced_ingress(pod_name, namespace)
