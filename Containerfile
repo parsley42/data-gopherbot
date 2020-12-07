@@ -2,21 +2,17 @@ FROM registry.in.linuxjedi.org/lnxjedi/gopherbot-theia:latest
 
 USER root
 
-ARG userid=1000
-ARG homedir=/home/robot
-
 ARG mdbookvers=v0.4.4
+ARG hugovers=0.79.0
 ARG kubectlvers=v1.18.12
 
-RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
+RUN dnf -y install dnf-plugins-core && \
+  dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
   dnf -y reinstall shadow-utils && \
-  dnf -y install 'dnf-command(copr)' && \
-  dnf -y copr enable rhcontainerbot/container-selinux && \
-  curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo && \
   dnf -y install \
     buildah \
     fuse-overlayfs \
-    gh && \
+    gh --exclude container-selinux && \
   dnf clean all && \
   rm -rf /var/cache /var/log/dnf* /var/log/dnf.*
 
@@ -44,18 +40,19 @@ RUN chmod 644 /etc/containers/containers.conf && \
     /var/lib/shared/vfs-images/images.lock \
     /var/lib/shared/vfs-layers/layers.lock
 
-RUN pip3 install awscli kubernetes ansible && \
+RUN pip3 install awscli kubernetes ansible PyGithub && \
   curl -L -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${kubectlvers}/bin/linux/amd64/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
   mkdir -p /sbin/.vscode-server && \
   chown 2:root /sbin/.vscode-server && \
   chmod u+rwx /sbin/.vscode-server
 
-## Install mdbook
+## Install mdbook & hugo
 RUN cd /usr/local/bin && \
   curl -L https://github.com/rust-lang/mdBook/releases/download/${mdbookvers}/mdbook-${mdbookvers}-x86_64-unknown-linux-gnu.tar.gz | tar xzvf - && \
-  chmod 755 mdbook
+  curl -L https://github.com/gohugoio/hugo/releases/download/v${hugovers}/hugo_${hugovers}_Linux-64bit.tar.gz | tar xzvf - hugo && \
+  chmod 755 mdbook hugo
 
-RUN chown -R robot:robot ${homedir}
+RUN chown -R ${USERID} ${HOME}
 
-USER ${userid}:${GROUP}
+USER ${USERID}
