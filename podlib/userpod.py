@@ -1,7 +1,29 @@
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 import os
+import base64
 from podlib.config import get_config
+
+def gen_user_label(username):
+    """ Generates a valid kubernetes label value from a username
+
+    Parameters
+    ----------
+    username: str
+        The username to munge
+
+    Returns
+    -------
+    label: str
+        A consistent string compatible with kubernetes labels
+    """
+
+    label = base64.standard_b64encode(username.lower().encode('utf8')).decode('utf8')
+    label = label.replace("+", ".")
+    label = label.replace("/", "-")
+    label = label.replace("=", "_")
+    label = "%se" % label
+    return label
 
 def pod_types(project=""):
     """ Generates a string array of user pod types
@@ -29,7 +51,7 @@ def pod_types(project=""):
         types.append(type_maps.items[i].metadata.name)
     return types
 
-def userpod(pod_type, username, uid, groupname, gid, annotations={}):
+def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
     """Starts a user pod
 
     Parameters
@@ -40,9 +62,11 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
         The username for the home directory, "user" or "user@dom"
     uid: int
         The numeric user ID of the user that the pod will run as
+    ugid: int
+        The numeric GID of the user's primary group
     groupname: str
         Opaque group name for project mount
-    gid: int
+    ggid: int
         The numeric group ID the pod will run as
     annotations: dict
         Any additional annotations for the ingress
@@ -73,14 +97,15 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
 
     passwd = poddata["passwd"]
     passwd = passwd.replace("<UID>", str(uid))
-    passwd = passwd.replace("<GID>", str(gid))
+    passwd = passwd.replace("<UGID>", str(ugid))
     group = poddata["group"]
-    group = group.replace("<GID>", str(gid))
+    group = group.replace("<UGID>", str(ugid))
+    group = group.replace("<PGID>", str(ggid))
     podmap = {
         "passwd": passwd,
         "group": group,
     }
-    dotted_username = username.replace("@", ".")
+    username_label = gen_user_label(username)
     dashed_username = username.replace("@", "-")
     dashed_username = dashed_username.replace(".", "-")
 
@@ -90,7 +115,7 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
         metadata=client.V1ObjectMeta(
             generate_name="%s-%s-" % (pod_type, dashed_username),
             labels={
-                "dotted-username": dotted_username,
+                "username-label": username_label,
             },
         ),
         data=podmap,
@@ -109,7 +134,7 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
     v1.patch_namespaced_config_map(pod_name, namespace=namespace, body=label)
 
     resource_labels = {
-        "dotted-username": dotted_username,
+        "username-label": username_label,
         "user-pod": pod_name,
     }
 
@@ -149,7 +174,7 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
         pod_mounts.append(
             client.V1VolumeMount(
                 name="home",
-                mount_path="/home/homedir"
+                mount_path="/home/user"
             )
         )
     if "PROJECT_PREFIX" in cfg:
@@ -172,6 +197,10 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
     registry = cfg["REGISTRY"]
     reg_org = cfg["REGISTRY_ORG"]
 
+    supplemental = []
+    if ugid != ggid:
+        supplemental = [ ggid ]
+
     pod = client.V1Pod(
         api_version="v1",
         kind="Pod",
@@ -181,13 +210,14 @@ def userpod(pod_type, username, uid, groupname, gid, annotations={}):
         ),
         spec=client.V1PodSpec(
             volumes=pod_volumes,
+            security_context=client.V1PodSecurityContext(supplemental_groups=supplemental),
             containers=[
                 client.V1Container(
                     name=pod_type,
                     image="%s/%s/%s:latest" % (registry, reg_org, pod_type),
                     security_context=client.V1SecurityContext(
                         run_as_user=uid,
-                        run_as_group=gid,
+                        run_as_group=ugid,
                     ),
                     volume_mounts=pod_mounts,
                 )
@@ -310,8 +340,8 @@ def userpods(username):
     namespace = cfg["NAMESPACE"]
     pod_dom = cfg["POD_DOMAIN"]
 
-    dotted_username = username.replace("@", ".")
-    selector = "dotted-username=%s" % dotted_username
+    username_label = gen_user_label(username)
+    selector = "username-label=%s" % username_label
 
     pod_dns=[]
     pods = v1.list_namespaced_pod(namespace, label_selector=selector)
