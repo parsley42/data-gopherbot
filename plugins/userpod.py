@@ -27,8 +27,11 @@ if command == "types":
 
 if command == "list":
     pod_dns = userpod.userpods("parse")
-    say = [ "Running pods:" ]
-    bot.Say("\n".join(say + pod_dns))
+    if len(pod_dns) > 0:
+        say = [ "Running pods:" ]
+        bot.Say("\n".join(say + pod_dns))
+    else:
+        bot.Say("No running pods found")
 
 if command == "launch":
     ptype = sys.argv.pop(0)
