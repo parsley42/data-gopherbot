@@ -19,9 +19,9 @@ def gen_user_label(username):
     """
 
     label = base64.standard_b64encode(username.lower().encode('utf8')).decode('utf8')
-    label = label.replace("+", ".")
+    label = label.replace("+", "_")
     label = label.replace("/", "-")
-    label = label.replace("=", "_")
+    label = label.replace("=", "") # Just remove base64 padding chars
     label = "%se" % label
     return label
 
@@ -51,15 +51,17 @@ def pod_types(project=""):
         types.append(type_maps.items[i].metadata.name)
     return types
 
-def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
+def userpod(pod_type, username, eppn, uid, ugid, groupname, ggid, annotations={}):
     """Starts a user pod
 
     Parameters
     ----------
     pod_type: str
         The workload type of the pod to launch, e.g. "theia-python"
-    user: str
-        The username for the home directory, "user" or "user@dom"
+    username: str
+        The short username for the user, e.g. "mst3k"
+    eppn: str
+        The eppn / long username, e.g. "mst3k@example.com"
     uid: int
         The numeric user ID of the user that the pod will run as
     ugid: int
@@ -98,12 +100,25 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
     passwd = poddata["passwd"]
     passwd = passwd.replace("<UID>", str(uid))
     passwd = passwd.replace("<UGID>", str(ugid))
+
     group = poddata["group"]
     group = group.replace("<UGID>", str(ugid))
     group = group.replace("<PGID>", str(ggid))
+
+    pod_port = poddata["port"]
+    envoycfg = cfg["ENVOY_TEMPLATE"]
+    envoyext = cfg["ENVOY_EXTERNAL"]
+    envoyadm = cfg["ENVOY_ADMIN"]
+    envoycfg = envoycfg.replace("<SERVICEPORT>", pod_port)
+    envoycfg = envoycfg.replace("<ENVOYADMIN>", envoyadm)
+    envoycfg = envoycfg.replace("<ENVOYEXTERNAL>", envoyext)
+    envoycfg = envoycfg.replace("<SHORTUSER>", username)
+    envoycfg = envoycfg.replace("<LONGUSER>", eppn)
+
     podmap = {
         "passwd": passwd,
         "group": group,
+        "envoy": envoycfg,
     }
     username_label = gen_user_label(username)
     dashed_username = username.replace("@", "-")
@@ -140,21 +155,21 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
 
     pod_volumes = [
         client.V1Volume(
-            name="passgrp",
+            name="cfgfiles",
             config_map=client.V1ConfigMapVolumeSource(
                 name=pod_name,
             )
         ),
     ]
 
-    pod_mounts = [
+    userpod_mounts = [
         client.V1VolumeMount(
-            name="passgrp",
+            name="cfgfiles",
             mount_path="/etc/passwd",
             sub_path="passwd",
         ),
         client.V1VolumeMount(
-            name="passgrp",
+            name="cfgfiles",
             mount_path="/etc/group",
             sub_path="group",
         ),
@@ -171,7 +186,7 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
                 )
             )
         )
-        pod_mounts.append(
+        userpod_mounts.append(
             client.V1VolumeMount(
                 name="home",
                 mount_path="/home/user"
@@ -187,7 +202,7 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
                 )
             )
         )
-        pod_mounts.append(
+        userpod_mounts.append(
             client.V1VolumeMount(
                 name="project",
                 mount_path="/home/project"
@@ -196,6 +211,7 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
 
     registry = cfg["REGISTRY"]
     reg_org = cfg["REGISTRY_ORG"]
+    envoy = cfg["ENVOY_CONTAINER"]
 
     supplemental = []
     if ugid != ggid:
@@ -219,14 +235,23 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
                         run_as_user=uid,
                         run_as_group=ugid,
                     ),
-                    volume_mounts=pod_mounts,
-                )
+                    volume_mounts=userpod_mounts,
+                ),
+                client.V1Container(
+                    name="envoy",
+                    image=envoy,
+                    volume_mounts=[
+                        client.V1VolumeMount(
+                            name="cfgfiles",
+                            mount_path="/etc/envoy/envoy.yaml",
+                            sub_path="envoy",
+                        ),
+                    ],
+                ),
             ],
         )
     )
     v1.create_namespaced_pod(namespace=namespace, body=pod)
-
-    pod_port = int(poddata["port"])
 
     service = client.V1Service(
         api_version="v1",
@@ -241,7 +266,7 @@ def userpod(pod_type, username, uid, ugid, groupname, ggid, annotations={}):
             ports=[client.V1ServicePort(
                 port=80,
                 protocol="TCP",
-                target_port=pod_port,
+                target_port=int(envoyext),
             )]
         )
     )

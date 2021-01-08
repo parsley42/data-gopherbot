@@ -36,7 +36,7 @@ if command == "launch":
         "nginx.ingress.kubernetes.io/auth-tls-secret": "admin/linuxjedi-ca-cert",
         "nginx.ingress.kubernetes.io/auth-tls-verify-client": "on",
     }
-    host = userpod.userpod(ptype, "parse", 1000, 1000, "project", 1001, annotations)
+    host = userpod.userpod(ptype, "parse", "parsley@linuxjedi.org", 1000, 1000, "project", 1001, annotations)
     while True:
         status = userpod.podstatus(host)
         if status == "Pending":
