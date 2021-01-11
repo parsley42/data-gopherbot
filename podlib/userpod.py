@@ -273,6 +273,25 @@ def userpod(pod_type, username, eppn, uid, ugid, groupname, ggid, annotations={}
     )
     v1.create_namespaced_service(namespace, body=service)
 
+    env_service = client.V1Service(
+        api_version="v1",
+        kind="Service",
+        metadata=client.V1ObjectMeta(
+            name="%s-envoy" % pod_name,
+            labels=resource_labels,
+            namespace=namespace,
+        ),
+        spec=client.V1ServiceSpec(
+            selector=resource_labels,
+            ports=[client.V1ServicePort(
+                port=9000,
+                protocol="TCP",
+                target_port=int(envoyadm),
+            )]
+        )
+    )
+    v1.create_namespaced_service(namespace, body=env_service)
+
     pod_dom = cfg["POD_DOMAIN"]
     pod_dns = "%s.%s" % (pod_name, pod_dom)
 
@@ -396,4 +415,5 @@ def terminate(pod_dns):
 
     v1.delete_namespaced_pod(pod_name, namespace)
     v1.delete_namespaced_service(pod_name, namespace)
+    v1.delete_namespaced_service("%s-envoy" % pod_name, namespace)
     v1beta.delete_namespaced_ingress(pod_name, namespace)
