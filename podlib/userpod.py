@@ -226,6 +226,7 @@ def userpod(pod_type, username, eppn, uid, ugid, groupname, ggid, annotations={}
         ),
         spec=client.V1PodSpec(
             volumes=pod_volumes,
+            restart_policy="OnFailure",
             security_context=client.V1PodSecurityContext(supplemental_groups=supplemental),
             containers=[
                 client.V1Container(
