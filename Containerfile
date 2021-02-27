@@ -1,18 +1,21 @@
-FROM registry.in.linuxjedi.org/lnxjedi/gopherbot-theia:latest
+FROM quay.io/lnxjedi/gopherbot-theia:latest
 
 USER root
 
-ARG mdbookvers=v0.4.4
-ARG hugovers=0.79.0
-ARG kubectlvers=v1.18.12
+ARG mdbookvers=v0.4.6
+ARG hugovers=0.80.0
+ARG kubectlvers=v1.20.2
 
 RUN dnf -y install dnf-plugins-core && \
   dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
   dnf -y reinstall shadow-utils && \
+  dnf -y install 'dnf-command(copr)' && \
+  dnf -y copr enable rhcontainerbot/container-selinux && \
+  curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo && \
   dnf -y install \
     buildah \
     fuse-overlayfs \
-    gh --exclude container-selinux && \
+    gh && \
   dnf clean all && \
   rm -rf /var/cache /var/log/dnf* /var/log/dnf.*
 
@@ -40,7 +43,9 @@ RUN chmod 644 /etc/containers/containers.conf && \
     /var/lib/shared/vfs-images/images.lock \
     /var/lib/shared/vfs-layers/layers.lock
 
-RUN pip3 install awscli kubernetes ansible PyGithub && \
+RUN python3 -m pip install -U pip && \
+  pip install awscli kubernetes ansible PyGithub && \
+  rm -rf ${HOME}/.cache && \
   curl -L -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${kubectlvers}/bin/linux/amd64/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
   mkdir -p /sbin/.vscode-server && \
@@ -53,6 +58,6 @@ RUN cd /usr/local/bin && \
   curl -L https://github.com/gohugoio/hugo/releases/download/v${hugovers}/hugo_${hugovers}_Linux-64bit.tar.gz | tar xzvf - hugo && \
   chmod 755 mdbook hugo
 
-RUN chown -R ${USERID} ${HOME}
+RUN chown -R ${USER}:${USER} ${HOME}
 
 USER ${USERID}
