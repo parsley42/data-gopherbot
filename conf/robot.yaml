@@ -141,12 +141,12 @@ ScheduledJobs:
   - "gopherbot-base"
 ## Build gopherbot-base-theia container just after 6am Saturday
 - Name: quaytrigger
-  Schedule: "1 0 6 * * SAT"
+  Schedule: "1 0 2 * * SAT"
   Arguments:
   - "gopherbot-base-theia"
 ## Rebuild gopherbot containers at noon on Saturday
 - Name: gopherci
-  Schedule: "1 0 12 * * SAT"
+  Schedule: "1 0 4 * * SAT"
   Arguments:
   - "github.com/lnxjedi/gopherbot"
   - "master"
