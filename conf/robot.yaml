@@ -82,6 +82,9 @@ ExternalJobs:
   "theia":
     Description: Start theia interface
     Path: jobs/theia.sh
+    Parameters:
+    - Name: "GOPHER_ENCRYPTION_KEY"
+      Value: "{{ env "GOPHER_ENCRYPTION_KEY" }}"
   "github-poller":
     Description: Job for polling GitHub to see if repositories have been updated
     Path: jobs/github-poller.py
