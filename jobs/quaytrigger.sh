@@ -21,6 +21,6 @@ REPO=$1
 WEBHOOK_ENV=$(echo $REPO | tr - _)
 WEBHOOK=${!WEBHOOK_ENV}
 
-COMMIT=$(gh api /repos/lnxjedi/gopherbot-base-containers/branches | jq -r '.[] | select(.name=="master") | .commit.sha')
+COMMIT=$(gh api /repos/lnxjedi/gopherbot-base-containers/branches | jq -r '.[] | select(.name=="main") | .commit.sha')
 
-echo "{ \"commit\": \"$COMMIT\", \"ref\": \"refs/heads/master\", \"default_branch\": \"master\" }" | curl -X POST -H "Content-Type: application/json" -d @- $WEBHOOK
+echo "{ \"commit\": \"$COMMIT\", \"ref\": \"refs/heads/main\", \"default_branch\": \"main\" }" | curl -X POST -H "Content-Type: application/json" -d @- $WEBHOOK
