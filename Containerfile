@@ -2,22 +2,21 @@ FROM quay.io/lnxjedi/gopherbot-theia:latest
 
 USER root
 
-ARG mdbookvers=v0.4.6
-ARG hugovers=0.80.0
-ARG kubectlvers=v1.20.2
+ARG mdbookvers=v0.4.7
+ARG hugovers=0.81.0
+ARG kubectlvers=v1.20.4
 
-RUN dnf -y install dnf-plugins-core && \
-  dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
-  dnf -y reinstall shadow-utils && \
-  dnf -y install 'dnf-command(copr)' && \
-  dnf -y copr enable rhcontainerbot/container-selinux && \
-  curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo && \
-  dnf -y install \
+RUN . /etc/os-release && \
+  echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/x${NAME}_${VERSION_ID}/ /" > /etc/apt/sources.list.d/kubic.list && \
+  curl -L https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/x${NAME}_${VERSION_ID}/Release.key  | apt-key add - && \
+  echo "deb https://cli.github.com/packages ${UBUNTU_CODENAME} main" > /etc/apt/sources.list.d/github.list && \
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0 && \
+  apt-get update && \
+  apt-get install -y \
     buildah \
     fuse-overlayfs \
     gh && \
-  dnf clean all && \
-  rm -rf /var/cache /var/log/dnf* /var/log/dnf.*
+  rm -rf /var/lib/apt/lists/*
 
 # Set an environment variable to default to chroot isolation for RUN
 # instructions and "buildah run".
@@ -43,8 +42,10 @@ RUN chmod 644 /etc/containers/containers.conf && \
     /var/lib/shared/vfs-images/images.lock \
     /var/lib/shared/vfs-layers/layers.lock
 
-RUN python3 -m pip install -U pip && \
-  pip install awscli kubernetes ansible PyGithub && \
+RUN pip3 install \
+    ansible \
+    awscli \
+    kubernetes && \
   rm -rf ${HOME}/.cache && \
   curl -L -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${kubectlvers}/bin/linux/amd64/kubectl && \
   chmod +x /usr/local/bin/kubectl && \
@@ -58,6 +59,4 @@ RUN cd /usr/local/bin && \
   curl -L https://github.com/gohugoio/hugo/releases/download/v${hugovers}/hugo_${hugovers}_Linux-64bit.tar.gz | tar xzvf - hugo && \
   chmod 755 mdbook hugo
 
-RUN chown -R ${USER}:${USER} ${HOME}
-
-USER ${USERID}
+USER 1000
