@@ -81,6 +81,7 @@ ExternalJobs:
     NameSpace: aws-dns
   "theia":
     Description: Start theia interface
+    RequireAdmin: true
     Path: jobs/theia.sh
     # Allow the robot to load it's read-write key
     NameSpace: manage
