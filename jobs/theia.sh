@@ -4,13 +4,7 @@
 
 source $GOPHER_INSTALLDIR/lib/gopherbot_v1.sh
 
-umask 0002
-
-SHELL=/bin/bash
-THEIA_DEFAULT_PLUGINS=local-dir:/usr/local/theia/plugins
-USE_LOCAL_GIT=true
-
-export SHELL THEIA_DEFAULT_PLUGINS USE_LOCAL_GIT
+FailTask tail-log
 
 cat > $HOME/.bashrc <<EOF
 # File created by jobs/theia.sh
@@ -19,5 +13,11 @@ PATH=$HOME/bin:$HOME/.local/bin:$HOME/go/bin:/opt/gopherbot:$PATH
 export PATH PS1
 EOF
 
-cd /usr/local/theia
-exec node /usr/local/theia/src-gen/backend/main.js /home/robot --hostname 0.0.0.0
+cat > $HOME/stop-theia.sh <<"EOF"
+kill $PPID
+EOF
+
+ln -snf /opt/gopherbot $HOME/robot-defaults || Say "Failed to create symlink $HOME/robot-defaults"
+
+AddTask git-init $GOPHER_CUSTOM_REPOSITORY
+AddTask run-theia
