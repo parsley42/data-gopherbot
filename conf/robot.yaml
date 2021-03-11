@@ -80,17 +80,11 @@ ExternalJobs:
     Path: jobs/ipcheckup.sh
     NameSpace: aws-dns
   "theia":
-    Description: Start theia interface
-    RequireAdmin: true
-    Path: jobs/theia.sh
-    # Allow the robot to load it's read-write key
-    NameSpace: manage
-    Parameters:
-    # Allow "gopherbot encrypt/decrypt" to work
-    - Name: "GOPHER_ENCRYPTION_KEY"
-      Value: "{{ env "GOPHER_ENCRYPTION_KEY" }}"
-    - Name: GOPHER_CUSTOM_REPOSITORY
-      Value: {{ env "GOPHER_CUSTOM_REPOSITORY" }}
+    AppendParameters:
+    - Name: "KUBERNETES_SERVICE_HOST"
+      Value: "{{ env "KUBERNETES_SERVICE_HOST" }}"
+    - Name: "KUBERNETES_SERVICE_PORT"
+      Value: "{{ env "KUBERNETES_SERVICE_PORT" }}"
   "github-poller":
     Description: Job for polling GitHub to see if repositories have been updated
     Path: jobs/github-poller.py
@@ -116,10 +110,6 @@ ExternalJobs:
 #       Value: "No way, Jack!"
 
 ExternalTasks:
-  "run-theia":
-    Description: "Set up environment required for theia and run"
-    Path: tasks/run-theia.sh
-    Privileged: true
   "buildah-login":
     Description: Perform buildah login for container build/push
     Path: tasks/buildah-login.sh
