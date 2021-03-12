@@ -18,6 +18,10 @@ RUN . /etc/os-release && \
     gh && \
   rm -rf /var/lib/apt/lists/*
 
+RUN chmod u-s /usr/bin/new*idmap && \
+  setcap CAP_SETGID+ep /usr/bin/newgidmap && \
+  setcap CAP_SETUID+ep /usr/bin/newuidmap
+
 # Set an environment variable to default to chroot isolation for RUN
 # instructions and "buildah run".
 ENV BUILDAH_ISOLATION=chroot
