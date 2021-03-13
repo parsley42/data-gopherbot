@@ -8,10 +8,9 @@ import os
 import sys
 sys.path.append("%s/lib" % os.getenv("GOPHER_INSTALLDIR"))
 from gopherbot_v2 import Robot
-from github import Github
 
 bot = Robot()
-g = Github(os.getenv("GITHUB_TOKEN"))
+token = os.getenv("GITHUB_TOKEN")
 
 repodata = bot.GetRepoData()
 

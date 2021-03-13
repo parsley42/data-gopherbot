@@ -152,7 +152,7 @@ ScheduledJobs:
   Schedule: "1 0 4 * * SAT"
   Arguments:
   - "github.com/lnxjedi/gopherbot"
-  - "master"
+  - "."
 ## If your robot is logging to a file, this job will rotate logs
 # - Name: logrotate
 #   Schedule: "5 0 0 * * *"
