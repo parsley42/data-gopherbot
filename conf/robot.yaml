@@ -87,8 +87,7 @@ ExternalJobs:
       Value: "{{ env "KUBERNETES_SERVICE_PORT" }}"
   "github-poller":
     Description: Job for polling GitHub to see if repositories have been updated
-    Path: jobs/github-poller.py
-    NameSpace: github
+    Disabled: false
   "quaytrigger":
     Description: Trigger an automated container build on quay.io
     Path: jobs/quaytrigger.sh
@@ -133,8 +132,8 @@ ScheduledJobs:
   Schedule: "@every 1m"
 - Name: ipcheckup
   Schedule: "@every 5m"
-# - Name: github-poller
-#   Schedule: "@every 30s"
+- Name: github-poller
+  Schedule: "@every 2m"
 - Name: alive
   Schedule: "0 0 9 * * MON"
 ## Build gopherbot-base container just after 12am Saturday
