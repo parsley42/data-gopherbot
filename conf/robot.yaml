@@ -86,7 +86,6 @@ ExternalJobs:
     - Name: "KUBERNETES_SERVICE_PORT"
       Value: "{{ env "KUBERNETES_SERVICE_PORT" }}"
   "github-poller":
-    Description: Job for polling GitHub to see if repositories have been updated
     Disabled: false
   "quaytrigger":
     Description: Trigger an automated container build on quay.io
